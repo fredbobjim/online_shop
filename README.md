@@ -27,7 +27,9 @@
 4. Скопировать содержимое файла .env.example в файл .env: cp .env.example .env
 5. Произвести необходимые настройки переменных окружения
 6. Сгенерировать ключ приложения: php artisan key:generate
-7. Запустить приложение ./vendor/bin/sail up -d
+7. Запустить контейнеры docker ./vendor/bin/sail up -d
+8. Запустить миграции и заполнить таблицы данными: ./vendor/bin/sail artisan migrate:fresh --seed
+9. По умолчанию приложение запускается по адресу http://localhost:8080/
 
 Можно сосоздать пседоним для более короткого ввода команд sail, например alias sail='[ -f sail ] && bash sail || bash vendor/bin/sail'.
 Тогда команда запуска приложения будет sail up -d
