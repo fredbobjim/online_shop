@@ -4,7 +4,10 @@ namespace Database\Seeders;
 
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class ContentSeeder extends Seeder
 {
@@ -360,14 +363,19 @@ class ContentSeeder extends Seeder
             ],
 
         ];
+
+        Storage::makeDirectory('categories');
+        Storage::makeDirectory('products');
+        Artisan::call('storage:link');
+
         foreach ($categories as $category) {
+            File::copy("resources/images/{$category['image']}", storage_path("app/public/{$category['image']}"));
             $category['created_at'] = Carbon::now();
             $category['updated_at'] = Carbon::now();
             $products = $category['products'];
             unset($category['products']);
             $categoryId = DB::table('categories')->insertGetId($category);
             foreach ($products as $product) {
-//                dd(array_key_exists('0',$product));
                 $product['created_at'] = Carbon::now();
                 $product['hit'] = rand(0, 1);
                 $product['recommended'] = rand(0, 1);
@@ -382,10 +390,10 @@ class ContentSeeder extends Seeder
                     $options = $product['options'];
                     unset($product['options']);
                 }
-//                dd($products);
-                $productId = DB::table('products')->insertGetId($product);
 
-                // property_product
+                $productId = DB::table('products')->insertGetId($product);
+                File::copy("resources/images/{$product['image']}", storage_path("app/public/{$product['image']}"));
+
                 if (isset($properties)) {
                     foreach ($properties as $propertyId) {
                         DB::table('property_product')->insert(
@@ -416,7 +424,7 @@ class ContentSeeder extends Seeder
                             $skuData['property_option_id'] = $option;
                             $skuData['created_at'] = Carbon::now();
                             $skuData['updated_at'] = Carbon::now();
-//                            dd($skuData);
+
                             DB::table('sku_property_option')->insert($skuData);
 
                         }
